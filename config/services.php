@@ -35,4 +35,21 @@ return [
         ],
     ],
 
+    'github' => [
+        'client_id'        => env('GITHUB_CLIENT_ID'),
+        'client_secret'    => env('GITHUB_CLIENT_SECRET'),
+        'redirect'         => env('GITHUB_REDIRECT'),
+        'app_id'           => env('GITHUB_APP_ID'),
+        'private_key_path' => env('GITHUB_APP_PRIVATE_KEY_PATH'),
+        'webhook_secret'   => env('GITHUB_WEBHOOK_SECRET'),
+    ],
+
+    'stripe' => [
+        'key'            => env('STRIPE_KEY'),
+        'secret'         => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'price_pro'      => env('STRIPE_PRICE_PRO'),
+        'price_team'     => env('STRIPE_PRICE_TEAM'),
+    ],
+
 ];

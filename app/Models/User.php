@@ -1,48 +1,62 @@
 <?php
-
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $keyType  = 'string';
+    public    $incrementing = false;
+
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'id', 'name', 'email', 'github_id', 'github_token',
+        'github_login', 'avatar', 'plan', 'stripe_id', 'subscription_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
+    protected $hidden = ['github_token'];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected static function boot()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        parent::boot();
+        static::creating(fn($m) => $m->id = (string) \Str::uuid());
+    }
+
+    /* ── Relationships ── */
+    public function repositories() {
+        return $this->hasMany(Repository::class);
+    }
+    public function rulesets() {
+        return $this->hasMany(Ruleset::class);
+    }
+    public function usageLogs() {
+        return $this->hasMany(UsageLog::class);
+    }
+    public function defaultRuleset() {
+        return $this->hasOne(Ruleset::class)->where('is_default', true);
+    }
+
+    /* ── Helpers ── */
+    public function isOnPlan(string $plan): bool {
+        return $this->plan === $plan;
+    }
+    public function isPro(): bool {
+        return in_array($this->plan, ['pro', 'team']);
+    }
+    public function monthlyPrLimit(): int {
+        return match($this->plan) {
+            'pro'  => 500,
+            'team' => 9999,
+            default => 50,
+        };
+    }
+    public function decryptedGithubToken(): string {
+        return decrypt($this->github_token);
     }
 }

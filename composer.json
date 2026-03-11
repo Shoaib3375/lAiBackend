@@ -8,10 +8,12 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
-        "laravel/sanctum": "^4.3",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "predis/predis": "^3.4",
         "socialiteproviders/github": "^4.1",
+        "socialiteproviders/gitlab": "^4.1",
+        "socialiteproviders/manager": "^4.8",
         "stripe/stripe-php": "^19.4"
     },
     "require-dev": {

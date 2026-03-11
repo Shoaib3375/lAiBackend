@@ -12,12 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->rememberToken();
+            $table->string('github_id')->unique()->nullable();
+            $table->text('github_token')->nullable();
+            $table->string('github_login')->nullable();
+            $table->string('avatar')->nullable();
+            $table->enum('plan', ['free', 'pro', 'team'])->default('free');
+            $table->string('stripe_id')->nullable();
+            $table->string('subscription_id')->nullable();
             $table->timestamps();
         });
 
@@ -29,7 +36,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignUuid('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
